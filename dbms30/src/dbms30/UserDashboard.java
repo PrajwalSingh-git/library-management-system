@@ -8,6 +8,8 @@ import java.util.ArrayList;
 public class UserDashboard extends JFrame {
     private String username;
     private int memberId;
+    private CardLayout cardLayout;
+    private JPanel mainContentPanel;
 
     public UserDashboard(String username) {
         this.username = username;
@@ -15,96 +17,228 @@ public class UserDashboard extends JFrame {
 
         if (memberId == -1) {
             JOptionPane.showMessageDialog(this, "User not found in members table.", "Error", JOptionPane.ERROR_MESSAGE);
-            dispose(); // Close the window
+            dispose();
             return;
         }
 
         setTitle("User Dashboard - " + username);
-        setSize(600, 400);
+        setSize(700, 450);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
 
-        // Panel layout
-        JPanel panel = new JPanel(new GridLayout(6, 1, 10, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
+        // Sidebar setup
+        JPanel sidebar = new JPanel(new GridLayout(6, 1, 0, 10));
+        sidebar.setBackground(new Color(45, 45, 45));
+        sidebar.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
 
-        // Buttons for options
-        JButton viewBooksBtn = new JButton("View Borrowed Books");
-        JButton viewFinesBtn = new JButton("Check Fines");
-        JButton payFinesBtn = new JButton("Pay Fines");
-        JButton paymentHistoryBtn = new JButton("Payment History");
-        JButton logoutBtn = new JButton("Logout");
+        JLabel titleLabel = new JLabel("User Panel", JLabel.CENTER);
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        sidebar.add(titleLabel);
 
-        // Add to panel
-        panel.add(viewBooksBtn);
-        panel.add(viewFinesBtn);
-        panel.add(payFinesBtn);
-        panel.add(paymentHistoryBtn);
-        panel.add(logoutBtn);
+        // Sidebar buttons
+        JButton borrowedBooksBtn = createSidebarButton("View Borrowed Books");
+        JButton checkFinesBtn = createSidebarButton("Check Fines");
+        JButton payFinesBtn = createSidebarButton("Pay Fines");
+        JButton paymentHistoryBtn = createSidebarButton("Payment History");
+        JButton logoutBtn = createSidebarButton("Logout");
 
-        // Add panel
-        add(panel);
+        sidebar.add(borrowedBooksBtn);
+        sidebar.add(checkFinesBtn);
+        sidebar.add(payFinesBtn);
+        sidebar.add(paymentHistoryBtn);
+        sidebar.add(logoutBtn);
 
-        // Button listeners
-        viewBooksBtn.addActionListener(e -> showBorrowedBooks());
-        viewFinesBtn.addActionListener(e -> showFines());
-        payFinesBtn.addActionListener(e -> payFines());
-        paymentHistoryBtn.addActionListener(e -> showPaymentHistory());
+        add(sidebar, BorderLayout.WEST);
+
+        // Main content panel with CardLayout
+        mainContentPanel = new JPanel();
+        cardLayout = new CardLayout();
+        mainContentPanel.setLayout(cardLayout);
+        mainContentPanel.setBackground(new Color(34, 34, 34));
+
+        // Adding content panels
+        mainContentPanel.add(createPlaceholderPanel("Welcome, " + username + "!"), "default");
+        mainContentPanel.add(createBorrowedBooksPanel(), "borrowedBooks");
+        mainContentPanel.add(createFinesPanel(), "fines");
+        mainContentPanel.add(createPayFinesPanel(), "payFines");
+        mainContentPanel.add(createPaymentHistoryPanel(), "paymentHistory");
+
+        add(mainContentPanel, BorderLayout.CENTER);
+
+        // Button actions to switch cards or logout
+        borrowedBooksBtn.addActionListener(e -> {
+            updateBorrowedBooksPanel();
+            cardLayout.show(mainContentPanel, "borrowedBooks");
+        });
+        checkFinesBtn.addActionListener(e -> {
+            updateFinesPanel();
+            cardLayout.show(mainContentPanel, "fines");
+        });
+        payFinesBtn.addActionListener(e -> {
+            updatePayFinesPanel();
+            cardLayout.show(mainContentPanel, "payFines");
+        });
+        paymentHistoryBtn.addActionListener(e -> {
+            updatePaymentHistoryPanel();
+            cardLayout.show(mainContentPanel, "paymentHistory");
+        });
         logoutBtn.addActionListener(e -> {
             dispose();
             new LoginGUI();
         });
 
+        cardLayout.show(mainContentPanel, "default");
         setVisible(true);
     }
 
-    private void showBorrowedBooks() {
+    // Helper method for sidebar button style
+    private JButton createSidebarButton(String text) {
+        JButton button = new JButton(text);
+        button.setFocusPainted(false);
+        button.setBackground(new Color(64, 64, 64));
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        button.setBorder(BorderFactory.createLineBorder(new Color(85, 85, 85)));
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        button.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                button.setBackground(new Color(85, 85, 85));
+            }
+            public void mouseExited(MouseEvent e) {
+                button.setBackground(new Color(64, 64, 64));
+            }
+        });
+
+        return button;
+    }
+
+    private JPanel createPlaceholderPanel(String message) {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(new Color(34, 34, 34));
+        JLabel label = new JLabel(message);
+        label.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        label.setForeground(Color.WHITE);
+        panel.add(label);
+        return panel;
+    }
+
+    // Borrowed Books Panel and refresh method
+    private JTextArea borrowedBooksArea;
+    private JPanel createBorrowedBooksPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(new Color(34, 34, 34));
+        borrowedBooksArea = new JTextArea();
+        borrowedBooksArea.setEditable(false);
+        borrowedBooksArea.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        borrowedBooksArea.setBackground(new Color(50, 50, 50));
+        borrowedBooksArea.setForeground(Color.WHITE);
+        borrowedBooksArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        panel.add(new JScrollPane(borrowedBooksArea), BorderLayout.CENTER);
+        return panel;
+    }
+    private void updateBorrowedBooksPanel() {
         ArrayList<String> books = DatabaseConnection.getBorrowedBooks(memberId);
         if (books.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "No books currently borrowed.");
+            borrowedBooksArea.setText("No books currently borrowed.");
         } else {
-            JOptionPane.showMessageDialog(this, String.join("\n", books), "Borrowed Books", JOptionPane.INFORMATION_MESSAGE);
+            borrowedBooksArea.setText(String.join("\n", books));
         }
     }
 
-    private void showFines() {
+    // Fines Panel and refresh method
+    private JLabel finesLabel;
+    private JPanel createFinesPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(new Color(34, 34, 34));
+        finesLabel = new JLabel();
+        finesLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        finesLabel.setForeground(Color.WHITE);
+        panel.add(finesLabel);
+        return panel;
+    }
+    private void updateFinesPanel() {
         double fines = DatabaseConnection.getFines(memberId);
-        JOptionPane.showMessageDialog(this, "Total outstanding fines: ₹" + String.format("%.2f", fines), "Fines", JOptionPane.INFORMATION_MESSAGE);
+        finesLabel.setText("Total outstanding fines: ₹" + String.format("%.2f", fines));
     }
 
-    private void payFines() {
-        double fines = DatabaseConnection.getFines(memberId);
-        if (fines <= 0) {
-            JOptionPane.showMessageDialog(this, "No outstanding fines to pay.");
-            return;
-        }
+    // Pay Fines Panel
+    private JPanel createPayFinesPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(new Color(34, 34, 34));
 
-        String input = JOptionPane.showInputDialog(this, "Enter amount to pay (max ₹" + fines + "):");
-        if (input != null) {
+        JLabel prompt = new JLabel("Enter amount to pay:");
+        prompt.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        prompt.setForeground(Color.WHITE);
+
+        JTextField amountField = new JTextField(10);
+        JButton payButton = new JButton("Pay");
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10,10,10,10);
+        gbc.gridx = 0; gbc.gridy = 0;
+        panel.add(prompt, gbc);
+        gbc.gridx = 1;
+        panel.add(amountField, gbc);
+        gbc.gridx = 0; gbc.gridy = 1; gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(payButton, gbc);
+
+        payButton.addActionListener(e -> {
+            double fines = DatabaseConnection.getFines(memberId);
+            if (fines <= 0) {
+                JOptionPane.showMessageDialog(this, "No outstanding fines to pay.");
+                return;
+            }
+
+            String input = amountField.getText().trim();
             try {
                 double amount = Double.parseDouble(input);
                 if (amount <= 0 || amount > fines) {
-                    JOptionPane.showMessageDialog(this, "Enter a valid amount.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Enter a valid amount (max ₹" + fines + ").", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
                 boolean success = DatabaseConnection.payFines(memberId, amount);
                 if (success) {
                     JOptionPane.showMessageDialog(this, "Payment successful! Amount paid: ₹" + amount, "Success", JOptionPane.INFORMATION_MESSAGE);
+                    amountField.setText("");
+                    updateFinesPanel();
                 } else {
                     JOptionPane.showMessageDialog(this, "Payment failed. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Invalid input. Please enter a number.");
+                JOptionPane.showMessageDialog(this, "Invalid input. Please enter a number.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        }
+        });
+
+        return panel;
+    }
+    private void updatePayFinesPanel() {
+        // No dynamic content to update currently
     }
 
-    private void showPaymentHistory() {
+    // Payment History Panel and refresh method
+    private JTextArea paymentHistoryArea;
+    private JPanel createPaymentHistoryPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(new Color(34, 34, 34));
+        paymentHistoryArea = new JTextArea();
+        paymentHistoryArea.setEditable(false);
+        paymentHistoryArea.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        paymentHistoryArea.setBackground(new Color(50, 50, 50));
+        paymentHistoryArea.setForeground(Color.WHITE);
+        paymentHistoryArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        panel.add(new JScrollPane(paymentHistoryArea), BorderLayout.CENTER);
+        return panel;
+    }
+    private void updatePaymentHistoryPanel() {
         ArrayList<String> history = DatabaseConnection.getPaymentHistory(memberId);
         if (history.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "No payment history found.");
+            paymentHistoryArea.setText("No payment history found.");
         } else {
-            JOptionPane.showMessageDialog(this, String.join("\n", history), "Payment History", JOptionPane.INFORMATION_MESSAGE);
+            paymentHistoryArea.setText(String.join("\n", history));
         }
     }
 }

@@ -72,15 +72,70 @@ public class DatabaseConnection {
         }
         return borrowedBooks;
     }
-
-    public static boolean addBook(String title, String author, String isbn) {
+ // Search book by ID - returns Book object or null if not found
+    public static Book searchBookById(int bookId) {
         try (Connection conn = getConnection()) {
-            String sql = "INSERT INTO books (title, author, isbn) VALUES (?, ?, ?)";
+            String sql = "SELECT * FROM books WHERE id = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, bookId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new Book(
+                    rs.getInt("id"),
+                    rs.getString("title"),
+                    rs.getString("author"),
+                    rs.getString("isbn"),
+                    rs.getString("genre")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // Update book info - returns true if update was successful
+    public static boolean updateBook(int bookId, String title, String author, String isbn, String genre) {
+        try (Connection conn = getConnection()) {
+            String sql = "UPDATE books SET title = ?, author = ?, isbn = ?, genre = ? WHERE id = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, title);
             ps.setString(2, author);
             ps.setString(3, isbn);
+            ps.setString(4, genre);
+            ps.setInt(5, bookId);
+
             return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Delete book by ID - returns true if delete was successful
+    public static boolean deleteBook(int bookId) {
+        try (Connection conn = getConnection()) {
+            String sql = "DELETE FROM books WHERE id = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, bookId);
+
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+    public static boolean addBook(String title, String author, String isbn, String genre) {
+        try (Connection conn = getConnection()) {
+            String sql = "INSERT INTO books (title, author, isbn, genre) VALUES (?, ?, ?, ?)";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, title);
+            stmt.setString(2, author);
+            stmt.setString(3, isbn);
+            stmt.setString(4, genre);
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;

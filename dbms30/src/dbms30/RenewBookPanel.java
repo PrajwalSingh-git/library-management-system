@@ -3,26 +3,41 @@ package dbms30;
 import javax.swing.*;
 import java.awt.*;
 
-public class RenewBookGUI extends JFrame {
+public class RenewBookPanel extends JPanel {
 
     private JTextField lendingIdField;
     private JButton renewBtn;
 
-    public RenewBookGUI() {
-        setTitle("Renew Book");
-        setSize(350, 180);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    public RenewBookPanel() {
         setLayout(new GridBagLayout());
+        setBackground(new Color(34, 34, 34));  // Optional: match dashboard background or set your preferred bg
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Lending ID Label
+        // Title Label
+        JLabel titleLabel = new JLabel("Renew Book");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setForeground(Color.WHITE);  // For dark background visibility
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
         gbc.gridx = 0;
         gbc.gridy = 0;
-        add(new JLabel("Lending ID:"), gbc);
+        gbc.gridwidth = 2; // span two columns for title
+        gbc.anchor = GridBagConstraints.CENTER;
+        add(titleLabel, gbc);
+
+        // Reset gridwidth for other components
+        gbc.gridwidth = 1;
+
+        // Lending ID Label
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.LINE_START;
+        JLabel lendingIdLabel = new JLabel("Lending ID:");
+        lendingIdLabel.setForeground(Color.WHITE);
+        add(lendingIdLabel, gbc);
 
         // Lending ID Field
         gbc.gridx = 1;
@@ -31,7 +46,7 @@ public class RenewBookGUI extends JFrame {
 
         // Renew Button
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
         renewBtn = new JButton("Renew Book");
@@ -52,11 +67,16 @@ public class RenewBookGUI extends JFrame {
                 JOptionPane.showMessageDialog(this, "Please enter a valid Lending ID.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
             }
         });
-
-        setVisible(true);
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(RenewBookGUI::new);
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("Renew Book");
+            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            frame.setSize(350, 200);
+            frame.setLocationRelativeTo(null);
+            frame.add(new RenewBookPanel());
+            frame.setVisible(true);
+        });
     }
 }

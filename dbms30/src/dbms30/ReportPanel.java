@@ -4,27 +4,32 @@ import javax.swing.*;
 import java.awt.*;
 import java.sql.*;
 
-public class ReportGUI extends JFrame {
+public class ReportPanel extends JPanel {
     private JTextArea reportArea;
     private JButton refreshButton;
 
-    public ReportGUI() {
-        setTitle("Library Reports");
-        setSize(500, 400);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
+    public ReportPanel() {
+        setLayout(new BorderLayout());
+        setBackground(new Color(34, 34, 34));
+
         reportArea = new JTextArea();
         reportArea.setEditable(false);
+        reportArea.setBackground(new Color(24, 24, 24));
+        reportArea.setForeground(Color.WHITE);
+        reportArea.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        reportArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
         refreshButton = new JButton("Generate Report");
+        refreshButton.setBackground(new Color(70, 130, 180)); // Steel Blue
+        refreshButton.setForeground(Color.WHITE);
+        refreshButton.setFocusPainted(false);
 
         refreshButton.addActionListener(e -> generateReport());
 
         add(new JScrollPane(reportArea), BorderLayout.CENTER);
         add(refreshButton, BorderLayout.SOUTH);
 
-        generateReport();  // Auto-generate on open
-
-        setVisible(true);
+        generateReport();
     }
 
     private void generateReport() {
@@ -42,11 +47,15 @@ public class ReportGUI extends JFrame {
             ResultSet rsLendings = stmt.executeQuery("SELECT COUNT(*) FROM lendings");
             if (rsLendings.next()) sb.append("Total Lendings: ").append(rsLendings.getInt(1)).append("\n");
 
-            ResultSet rsOverdue = stmt.executeQuery("SELECT COUNT(*) FROM lendings WHERE return_date IS NULL AND due_date < CURDATE()");
+            ResultSet rsOverdue = stmt.executeQuery(
+                "SELECT COUNT(*) FROM lendings WHERE return_date IS NULL AND due_date < CURDATE()");
             if (rsOverdue.next()) sb.append("Overdue Books: ").append(rsOverdue.getInt(1)).append("\n");
 
             ResultSet rsFines = stmt.executeQuery("SELECT SUM(fine) FROM lendings");
-            if (rsFines.next()) sb.append("Total Fines Collected: ₹").append(rsFines.getDouble(1)).append("\n");
+            if (rsFines.next()) {
+                double fines = rsFines.getDouble(1);
+                sb.append("Total Fines Collected: ₹").append(String.format("%.2f", fines)).append("\n");
+            }
 
             reportArea.setText(sb.toString());
 

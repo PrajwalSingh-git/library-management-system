@@ -3,19 +3,15 @@ package dbms30;
 import javax.swing.*;
 import java.awt.*;
 
-public class AddMemberGUI extends JFrame {
+public class AddMemberPanel extends JPanel {
     private JTextField nameField;
     private JTextField usernameField;
     private JComboBox<String> membershipTypeBox;
     private JButton addButton, cancelButton;
 
-    public AddMemberGUI() {
-        setTitle("Add Member");
-        setSize(400, 250);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
+    public AddMemberPanel() {
         setLayout(new GridBagLayout());
-
+        setBackground(new Color(34, 34, 34));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(8, 10, 8, 10);
         gbc.anchor = GridBagConstraints.WEST;
@@ -23,7 +19,9 @@ public class AddMemberGUI extends JFrame {
         // Row 1: Name
         gbc.gridx = 0;
         gbc.gridy = 0;
-        add(new JLabel("Name:"), gbc);
+        JLabel nameLabel = new JLabel("Name:");
+        nameLabel.setForeground(Color.WHITE);
+        add(nameLabel, gbc);
 
         gbc.gridx = 1;
         nameField = new JTextField(20);
@@ -32,7 +30,9 @@ public class AddMemberGUI extends JFrame {
         // Row 2: Username
         gbc.gridx = 0;
         gbc.gridy = 1;
-        add(new JLabel("Username:"), gbc);
+        JLabel usernameLabel = new JLabel("Username:");
+        usernameLabel.setForeground(Color.WHITE);
+        add(usernameLabel, gbc);
 
         gbc.gridx = 1;
         usernameField = new JTextField(20);
@@ -41,7 +41,9 @@ public class AddMemberGUI extends JFrame {
         // Row 3: Membership Type
         gbc.gridx = 0;
         gbc.gridy = 2;
-        add(new JLabel("Membership Type:"), gbc);
+        JLabel membershipLabel = new JLabel("Membership Type:");
+        membershipLabel.setForeground(Color.WHITE);
+        add(membershipLabel, gbc);
 
         gbc.gridx = 1;
         membershipTypeBox = new JComboBox<>(new String[]{"Gold", "Silver", "Platinum"});
@@ -55,8 +57,8 @@ public class AddMemberGUI extends JFrame {
 
         addButton = new JButton("Add Member");
         cancelButton = new JButton("Cancel");
-
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
+        buttonPanel.setBackground(new Color(34, 34, 34));
         buttonPanel.add(addButton);
         buttonPanel.add(cancelButton);
         add(buttonPanel, gbc);
@@ -82,12 +84,11 @@ public class AddMemberGUI extends JFrame {
             }
         });
 
-        cancelButton.addActionListener(e -> dispose());
-
-        setVisible(true);
-    }
-
-    public static void main(String[] args) {
-        new AddMemberGUI();
+        cancelButton.addActionListener(e -> {
+            // Clear fields instead of disposing, since it's a panel now
+            nameField.setText("");
+            usernameField.setText("");
+            membershipTypeBox.setSelectedIndex(0);
+        });
     }
 }
