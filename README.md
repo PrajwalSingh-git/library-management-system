@@ -51,7 +51,7 @@ This is a **desktop-based Library Management System** built using **Java Swing**
 
 1. **Clone the repository**
    ``bash
-   git clone https://github.com/yourusername/library-management-system.git
+   git clone https://github.com/PrajwalSingh-git/library-management-system.git
    cd library-management-system
 2. **Set up the MySQL database**
 
