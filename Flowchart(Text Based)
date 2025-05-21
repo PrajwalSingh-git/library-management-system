@@ -1,0 +1,66 @@
+
+[Start]
+   |
+   v
+[Login Screen]
+   |
+   v
+[Enter Username & Password]
+   |
+   v
+[Validate Credentials] ---> [Invalid?] ---> [Show Error / Retry]
+   |
+   v
+[Select Role]
+   |-------------------------------|-------------------------------|
+   v                               v                               v
+[Admin]                        [Librarian]                      [User]
+   |                               |                               |
+   v                               v                               v
+[Admin Dashboard]           [Librarian Dashboard]           [User Dashboard]
+   |                               |                               |
+   |                               |                               |
+   |                               |                               |
+   |                               |     +--------------------+     |
+   |                               |     | Search/View Books |<----+
+   |                               |     +--------------------+
+   |                               |     +--------------------+
+   |     +---------------------+   +----> Issue Book ---------+---> [Check if issued (lendings)]
+   |     | Add Book            |         +--------------------+     [Insert into lendings]
+   |     +---------------------+         +--------------------+
+   |     +---------------------+   +----> Return Book --------+---> [Update return_date in lendings]
+   |     | Add Member          |         +--------------------+
+   |     +---------------------+         +--------------------+
+   |     +---------------------+   +----> View Member Details
+   |     | View Reports        |
+   |     +---------------------+         +--------------------+
+   |     +---------------------+         |     Logout         |
+   |     | Settings            |         +--------------------+
+   |     +---------------------+
+   |     +---------------------+
+   |     | Logout              |
+   |     +---------------------+
+
+   +----------------------------+-----------------------------+
+                                |
+                                v
+                    [Database Interactions (All Roles)]
+                                |
+     +-------------------------------------------------------+
+     | Tables: users, books, members, lendings, payments     |
+     +-------------------------------------------------------+
+
+                       USER-SPECIFIC ACTIONS
+                       ---------------------
+   +----------------------------+-----------------------------+
+   | [Search Books]            | --> (Query books)            |
+   | [View Borrowed Books]     | --> (Query lendings)         |
+   | [Return Book]             | --> (Update lendings)        |
+   | [Renew Book]              | --> (Extend due_date)        |
+   | [Pay Fines]               | --> (Insert into payments)   |
+   | [View Payment History]    | --> (Query payments)         |
+   | [Generate Receipt]        | --> (Format history record)  |
+   | [Logout]                                                |
+   +----------------------------+-----------------------------+
+
+[End]
