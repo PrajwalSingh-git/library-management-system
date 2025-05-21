@@ -6,6 +6,7 @@ import java.awt.*;
 public class AddMemberPanel extends JPanel {
     private JTextField nameField;
     private JTextField usernameField;
+    private JTextField emailField;
     private JComboBox<String> membershipTypeBox;
     private JButton addButton, cancelButton;
 
@@ -37,10 +38,22 @@ public class AddMemberPanel extends JPanel {
         gbc.gridx = 1;
         usernameField = new JTextField(20);
         add(usernameField, gbc);
-
-        // Row 3: Membership Type
+        
+     // Row 3: Email
         gbc.gridx = 0;
         gbc.gridy = 2;
+        JLabel emailLabel = new JLabel("Email:");
+        emailLabel.setForeground(Color.WHITE);
+        add(emailLabel, gbc);
+
+        gbc.gridx = 1;
+        emailField = new JTextField(20);
+        add(emailField, gbc);
+
+
+        // Row 4: Membership Type
+        gbc.gridx = 0;
+        gbc.gridy = 3;
         JLabel membershipLabel = new JLabel("Membership Type:");
         membershipLabel.setForeground(Color.WHITE);
         add(membershipLabel, gbc);
@@ -49,9 +62,9 @@ public class AddMemberPanel extends JPanel {
         membershipTypeBox = new JComboBox<>(new String[]{"Gold", "Silver", "Platinum"});
         add(membershipTypeBox, gbc);
 
-        // Row 4: Buttons
+        // Row 5: Buttons
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
 
@@ -67,14 +80,15 @@ public class AddMemberPanel extends JPanel {
         addButton.addActionListener(e -> {
             String name = nameField.getText().trim();
             String username = usernameField.getText().trim();
+            String email = emailField.getText().trim();
             String membershipType = (String) membershipTypeBox.getSelectedItem();
 
-            if (name.isEmpty() || username.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Name and username cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+            if (name.isEmpty() || username.isEmpty() || email.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Name, username, and email cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            boolean success = DatabaseConnection.addMember(name, username, membershipType);
+            boolean success = DatabaseConnection.addMember(name, username, email, membershipType);
             if (success) {
                 JOptionPane.showMessageDialog(this, "Member added successfully!");
                 nameField.setText("");

@@ -73,11 +73,12 @@ public class DatabaseConnection {
         return borrowedBooks;
     }
  // Search book by ID - returns Book object or null if not found
-    public static Book searchBookById(int bookId) {
-        try (Connection conn = getConnection()) {
-            String sql = "SELECT * FROM books WHERE id = ?";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, bookId);
+    public static Book searchBookByIsbn(String isbn) {
+        String sql = "SELECT * FROM books WHERE isbn = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, isbn);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return new Book(
@@ -125,6 +126,34 @@ public class DatabaseConnection {
             return false;
         }
     }
+    
+    public static boolean placeHoldRequest(int memberId, int bookId) {
+        String sql = "INSERT INTO hold_requests (member_id, book_id, request_date, status) VALUES (?, ?, CURDATE(), 'Pending')";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, memberId);
+            ps.setInt(2, bookId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static ArrayList<String> getAvailableBooksForHold() {
+        ArrayList<String> books = new ArrayList<>();
+        String sql = "SELECT id, title FROM books WHERE available_copies > 0";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String title = rs.getString("title");
+                books.add(id + " - " + title);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return books;
+    }
+
 
 
     public static boolean addBook(String title, String author, String isbn, String genre) {
@@ -166,9 +195,9 @@ public class DatabaseConnection {
         return sb.toString();
     }
 
-    public static boolean addMember(String name, String username, String membershipType) {
+    public static boolean addMember(String name, String username, String email, String membershipType) {
         String checkUserSQL = "SELECT COUNT(*) FROM users WHERE username = ?";
-        String insertMemberSQL = "INSERT INTO members (name, username, membership_type) VALUES (?, ?, ?)";
+        String insertMemberSQL = "INSERT INTO members (name, username, email, membership_type) VALUES (?, ?, ?, ?)";
         String insertUserSQL = "INSERT INTO users (username, password, role) VALUES (?, ?, 'User')";
 
         try (Connection conn = getConnection()) {
@@ -190,10 +219,11 @@ public class DatabaseConnection {
                 PreparedStatement psMember = conn.prepareStatement(insertMemberSQL);
                 PreparedStatement psUser = conn.prepareStatement(insertUserSQL)
             ) {
-                // Insert into members table including username
+                // Insert into members table
                 psMember.setString(1, name);
                 psMember.setString(2, username);
-                psMember.setString(3, membershipType);
+                psMember.setString(3, email);
+                psMember.setString(4, membershipType);
                 psMember.executeUpdate();
 
                 // Insert into users table
@@ -214,6 +244,7 @@ public class DatabaseConnection {
         }
         return false;
     }
+
 
 
     public static boolean renewBook(int lendingId) {

@@ -40,12 +40,14 @@ public class UserDashboard extends JFrame {
         // Sidebar buttons
         JButton borrowedBooksBtn = createSidebarButton("View Borrowed Books");
         JButton checkFinesBtn = createSidebarButton("Check Fines");
+        JButton holdBookBtn = createSidebarButton("Hold Book");
         JButton payFinesBtn = createSidebarButton("Pay Fines");
         JButton paymentHistoryBtn = createSidebarButton("Payment History");
         JButton logoutBtn = createSidebarButton("Logout");
 
         sidebar.add(borrowedBooksBtn);
         sidebar.add(checkFinesBtn);
+        sidebar.add(holdBookBtn);
         sidebar.add(payFinesBtn);
         sidebar.add(paymentHistoryBtn);
         sidebar.add(logoutBtn);
@@ -62,6 +64,7 @@ public class UserDashboard extends JFrame {
         mainContentPanel.add(createPlaceholderPanel("Welcome, " + username + "!"), "default");
         mainContentPanel.add(createBorrowedBooksPanel(), "borrowedBooks");
         mainContentPanel.add(createFinesPanel(), "fines");
+        mainContentPanel.add(createHoldBookPanel(), "holdBook");
         mainContentPanel.add(createPayFinesPanel(), "payFines");
         mainContentPanel.add(createPaymentHistoryPanel(), "paymentHistory");
 
@@ -75,6 +78,10 @@ public class UserDashboard extends JFrame {
         checkFinesBtn.addActionListener(e -> {
             updateFinesPanel();
             cardLayout.show(mainContentPanel, "fines");
+        });
+        holdBookBtn.addActionListener(e -> {
+            updateHoldBookPanel();
+            cardLayout.show(mainContentPanel, "holdBook");
         });
         payFinesBtn.addActionListener(e -> {
             updatePayFinesPanel();
@@ -147,6 +154,53 @@ public class UserDashboard extends JFrame {
             borrowedBooksArea.setText(String.join("\n", books));
         }
     }
+    
+ // Hold Book Panel
+    private JComboBox<String> bookDropdown;
+    private JPanel createHoldBookPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(new Color(34, 34, 34));
+
+        JLabel selectLabel = new JLabel("Select a book to hold:");
+        selectLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        selectLabel.setForeground(Color.WHITE);
+
+        bookDropdown = new JComboBox<>();
+        JButton holdBtn = new JButton("Place Hold Request");
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.gridx = 0; gbc.gridy = 0;
+        panel.add(selectLabel, gbc);
+        gbc.gridx = 1;
+        panel.add(bookDropdown, gbc);
+        gbc.gridx = 0; gbc.gridy = 1; gbc.gridwidth = 2;
+        panel.add(holdBtn, gbc);
+
+        holdBtn.addActionListener(e -> {
+            String selected = (String) bookDropdown.getSelectedItem();
+            if (selected != null && !selected.isEmpty()) {
+                int bookId = Integer.parseInt(selected.split(" - ")[0]);
+                boolean success = DatabaseConnection.placeHoldRequest(memberId, bookId);
+                if (success) {
+                    JOptionPane.showMessageDialog(this, "Hold request placed successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Failed to place hold request. Try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        return panel;
+    }
+
+    private void updateHoldBookPanel() {
+        bookDropdown.removeAllItems();
+        ArrayList<String> availableBooks = DatabaseConnection.getAvailableBooksForHold();
+        for (String book : availableBooks) {
+            bookDropdown.addItem(book);
+        }
+    }
+
 
     // Fines Panel and refresh method
     private JLabel finesLabel;
