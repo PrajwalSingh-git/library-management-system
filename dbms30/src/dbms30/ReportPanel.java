@@ -11,6 +11,16 @@ public class ReportPanel extends JPanel {
     public ReportPanel() {
         setLayout(new BorderLayout());
         setBackground(new Color(34, 34, 34));
+        
+        // Title Bar
+        JLabel titleBar = new JLabel("GENERATE REPORTS");
+        titleBar.setOpaque(true);
+        titleBar.setBackground(new Color(45, 45, 45));
+        titleBar.setForeground(Color.WHITE);
+        titleBar.setFont(new Font("SansSerif", Font.BOLD, 20));
+        titleBar.setHorizontalAlignment(SwingConstants.CENTER);
+        titleBar.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        add(titleBar, BorderLayout.NORTH);
 
         reportArea = new JTextArea();
         reportArea.setEditable(false);

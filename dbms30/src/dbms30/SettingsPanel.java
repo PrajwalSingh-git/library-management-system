@@ -10,32 +10,71 @@ public class SettingsPanel extends JPanel {
 
     public SettingsPanel() {
         setLayout(new BorderLayout());
+        setBackground(new Color(34, 34, 34));
+
+        // Title Bar
+        JLabel titleBar = new JLabel("Settings");
+        titleBar.setOpaque(true);
+        titleBar.setBackground(new Color(45, 45, 45));
+        titleBar.setForeground(Color.WHITE);
+        titleBar.setFont(new Font("SansSerif", Font.BOLD, 20));
+        titleBar.setHorizontalAlignment(SwingConstants.CENTER);
+        titleBar.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        add(titleBar, BorderLayout.NORTH);
+
+        // Form Panel
         JPanel formPanel = new JPanel(new GridLayout(3, 2, 10, 10));
+        formPanel.setBackground(new Color(34, 34, 34));
         formPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
 
-        // Input Fields
-        formPanel.add(new JLabel("Lending Period (days):"));
+        JLabel lendingLabel = new JLabel("Lending Period (days):");
+        lendingLabel.setForeground(Color.WHITE);
+        lendingLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        formPanel.add(lendingLabel);
         lendingPeriodField = new JTextField();
         formPanel.add(lendingPeriodField);
 
-        formPanel.add(new JLabel("Fine Per Day (₹):"));
+        JLabel fineLabel = new JLabel("Fine Per Day (₹):");
+        fineLabel.setForeground(Color.WHITE);
+        fineLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        formPanel.add(fineLabel);
         fineRateField = new JTextField();
         formPanel.add(fineRateField);
 
-        // Buttons
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
+        add(formPanel, BorderLayout.CENTER);
+
+        // Buttons Panel
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        buttonPanel.setBackground(new Color(34, 34, 34));
+
+        Font buttonFont = new Font("Segoe UI", Font.BOLD, 14);
+
         saveButton = new JButton("Save Settings");
+        styleButton(saveButton, buttonFont, new Color(70, 130, 180), Color.WHITE); // Steel Blue
+
         resetButton = new JButton("Reset to Defaults");
+        styleButton(resetButton, buttonFont, new Color(220, 20, 60), Color.WHITE); // Crimson
+
         buttonPanel.add(saveButton);
         buttonPanel.add(resetButton);
 
-        add(formPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
+        // Actions
         loadSettings();
-
         saveButton.addActionListener(e -> saveSettingsToDatabase());
         resetButton.addActionListener(e -> resetToDefaults());
+    }
+
+    private void styleButton(JButton button, Font font, Color bg, Color fg) {
+        button.setFont(font);
+        button.setBackground(bg);
+        button.setForeground(fg);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setPreferredSize(new Dimension(160, 35));
+        button.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
     }
 
     private void loadSettings() {

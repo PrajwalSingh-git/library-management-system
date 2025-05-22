@@ -10,61 +10,113 @@ public class EditSearchBookPanel extends JPanel {
     public EditSearchBookPanel() {
         setLayout(new BorderLayout());
         setBackground(new Color(34, 34, 34));
+        
+        // Title Bar
+        JLabel titleBar = new JLabel("Edit / Search Book");
+        titleBar.setOpaque(true);
+        titleBar.setBackground(new Color(45, 45, 45));
+        titleBar.setForeground(Color.WHITE);
+        titleBar.setFont(new Font("SansSerif", Font.BOLD, 20));
+        titleBar.setHorizontalAlignment(SwingConstants.CENTER);
+        titleBar.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        add(titleBar, BorderLayout.NORTH);
 
-        JPanel formPanel = new JPanel(new GridLayout(7, 2, 10, 10)); // Extra row for search
+        JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBackground(new Color(34, 34, 34));
-        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 10, 30));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.anchor = GridBagConstraints.WEST;
 
-        // Row 1: Search by ISBN
+        Font labelFont = new Font("Segoe UI", Font.BOLD, 14);
+
+        // Search ISBN
+        gbc.gridx = 0;
+        gbc.gridy = 0;
         JLabel searchIsbnLabel = new JLabel("Search by ISBN:");
         searchIsbnLabel.setForeground(Color.WHITE);
-        formPanel.add(searchIsbnLabel);
-        searchIsbnField = new JTextField();
-        formPanel.add(searchIsbnField);
+        searchIsbnLabel.setFont(labelFont);
+        formPanel.add(searchIsbnLabel, gbc);
 
-        // Row 2: Book ID (read-only)
+        gbc.gridx = 1;
+        searchIsbnField = new JTextField(20);
+        formPanel.add(searchIsbnField, gbc);
+
+        // Book ID (read-only)
+        gbc.gridx = 0;
+        gbc.gridy++;
         JLabel idLabel = new JLabel("Book ID:");
         idLabel.setForeground(Color.WHITE);
-        formPanel.add(idLabel);
-        idField = new JTextField();
-        idField.setEditable(false); // ID should not be editable
-        formPanel.add(idField);
+        idLabel.setFont(labelFont);
+        formPanel.add(idLabel, gbc);
 
-        // Row 3: Title
+        gbc.gridx = 1;
+        idField = new JTextField(20);
+        idField.setEditable(false);
+        idField.setBackground(Color.LIGHT_GRAY);
+        formPanel.add(idField, gbc);
+
+        // Title
+        gbc.gridx = 0;
+        gbc.gridy++;
         JLabel titleLabel = new JLabel("Title:");
         titleLabel.setForeground(Color.WHITE);
-        formPanel.add(titleLabel);
-        titleField = new JTextField();
-        formPanel.add(titleField);
+        titleLabel.setFont(labelFont);
+        formPanel.add(titleLabel, gbc);
 
-        // Row 4: Author
+        gbc.gridx = 1;
+        titleField = new JTextField(20);
+        formPanel.add(titleField, gbc);
+
+        // Author
+        gbc.gridx = 0;
+        gbc.gridy++;
         JLabel authorLabel = new JLabel("Author:");
         authorLabel.setForeground(Color.WHITE);
-        formPanel.add(authorLabel);
-        authorField = new JTextField();
-        formPanel.add(authorField);
+        authorLabel.setFont(labelFont);
+        formPanel.add(authorLabel, gbc);
 
-        // Row 5: ISBN
+        gbc.gridx = 1;
+        authorField = new JTextField(20);
+        formPanel.add(authorField, gbc);
+
+        // ISBN
+        gbc.gridx = 0;
+        gbc.gridy++;
         JLabel isbnLabel = new JLabel("ISBN:");
         isbnLabel.setForeground(Color.WHITE);
-        formPanel.add(isbnLabel);
-        isbnField = new JTextField();
-        formPanel.add(isbnField);
+        isbnLabel.setFont(labelFont);
+        formPanel.add(isbnLabel, gbc);
 
-        // Row 6: Genre
+        gbc.gridx = 1;
+        isbnField = new JTextField(20);
+        formPanel.add(isbnField, gbc);
+
+        // Genre
+        gbc.gridx = 0;
+        gbc.gridy++;
         JLabel genreLabel = new JLabel("Genre:");
         genreLabel.setForeground(Color.WHITE);
-        formPanel.add(genreLabel);
-        genreField = new JTextField();
-        formPanel.add(genreField);
+        genreLabel.setFont(labelFont);
+        formPanel.add(genreLabel, gbc);
 
-        // Row 7: Buttons
-        searchButton = new JButton("Search");
-        updateButton = new JButton("Update");
-        formPanel.add(searchButton);
-        formPanel.add(updateButton);
+        gbc.gridx = 1;
+        genreField = new JTextField(20);
+        formPanel.add(genreField, gbc);
 
         add(formPanel, BorderLayout.CENTER);
+
+        // Buttons Panel
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.setBackground(new Color(34, 34, 34));
+
+        searchButton = new JButton("Search");
+        updateButton = new JButton("Update");
+
+        buttonPanel.add(searchButton);
+        buttonPanel.add(updateButton);
+
+        add(buttonPanel, BorderLayout.SOUTH);
 
         // Button Actions
         searchButton.addActionListener(e -> {

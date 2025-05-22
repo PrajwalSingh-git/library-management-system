@@ -45,7 +45,7 @@ public class LibrarianDashboard extends JFrame {
 
         add(sidebar, BorderLayout.WEST);
 
-        // Main Content
+        // Main Content with background
         mainContentPanel = new JPanel();
         cardLayout = new CardLayout();
         mainContentPanel.setLayout(cardLayout);
@@ -59,10 +59,9 @@ public class LibrarianDashboard extends JFrame {
         mainContentPanel.add(new ViewFinesPanel(), "fines");
         mainContentPanel.add(new HoldRequestsPanel(), "holds");
 
-
         add(mainContentPanel, BorderLayout.CENTER);
 
-        // Button actions
+        // Button Actions
         issueBookBtn.addActionListener(e -> cardLayout.show(mainContentPanel, "issue"));
         returnBookBtn.addActionListener(e -> cardLayout.show(mainContentPanel, "return"));
         renewBookBtn.addActionListener(e -> cardLayout.show(mainContentPanel, "renew"));
@@ -91,6 +90,7 @@ public class LibrarianDashboard extends JFrame {
             public void mouseEntered(MouseEvent e) {
                 button.setBackground(new Color(85, 85, 85));
             }
+
             public void mouseExited(MouseEvent e) {
                 button.setBackground(new Color(64, 64, 64));
             }
@@ -100,12 +100,24 @@ public class LibrarianDashboard extends JFrame {
     }
 
     private JPanel createPlaceholderPanel(String text) {
-        JPanel panel = new JPanel();
-        panel.setBackground(new Color(34, 34, 34));
-        JLabel label = new JLabel(text);
-        label.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        JPanel panel = new JPanel() {
+            private final Image backgroundImage = new ImageIcon(getClass().getResource("/icons/librar.jpg")).getImage();
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
+
+        panel.setLayout(new BorderLayout());
+
+        JLabel label = new JLabel(text, SwingConstants.CENTER);
+        label.setFont(new Font("Segoe UI", Font.BOLD, 26));
         label.setForeground(Color.WHITE);
-        panel.add(label);
+        label.setOpaque(false);
+
+        panel.add(label, BorderLayout.CENTER);
         return panel;
     }
 }

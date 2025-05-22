@@ -13,7 +13,7 @@ public class LoginGUI extends JFrame {
     public LoginGUI() {
         setTitle("Library Management System - Login");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 400);
+        setSize(510, 600);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
         getContentPane().setBackground(new Color(34, 34, 34)); // Dark background
@@ -27,7 +27,7 @@ public class LoginGUI extends JFrame {
 
         try {
             ImageIcon icon = new ImageIcon(getClass().getResource("/icons/logo.png"));
-            Image image = icon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
+            Image image = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
             logoLabel.setIcon(new ImageIcon(image));
         } catch (Exception e) {
             System.out.println("Logo not found. Skipping...");

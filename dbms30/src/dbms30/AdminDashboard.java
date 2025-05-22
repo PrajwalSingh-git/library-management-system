@@ -100,12 +100,25 @@ public class AdminDashboard extends JFrame {
     }
 
     private JPanel createPlaceholderPanel(String text) {
-        JPanel panel = new JPanel();
-        panel.setBackground(new Color(34, 34, 34));
-        JLabel label = new JLabel(text);
-        label.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        JPanel panel = new JPanel() {
+            private Image backgroundImage = new ImageIcon(getClass().getResource("/icons/admin.png")).getImage();
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
+
+        panel.setLayout(new BorderLayout());
+
+        JLabel label = new JLabel(text, SwingConstants.CENTER);
+        label.setFont(new Font("Segoe UI", Font.BOLD, 26));
         label.setForeground(Color.WHITE);
-        panel.add(label);
+        label.setOpaque(false);
+
+        panel.add(label, BorderLayout.CENTER);
         return panel;
     }
-}
+
+    }

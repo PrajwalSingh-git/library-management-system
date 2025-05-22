@@ -11,6 +11,9 @@ public class UserDashboard extends JFrame {
     private CardLayout cardLayout;
     private JPanel mainContentPanel;
 
+    // Sidebar buttons fixed size
+    private static final Dimension BUTTON_SIZE = new Dimension(180, 40);
+
     public UserDashboard(String username) {
         this.username = username;
         this.memberId = DatabaseConnection.getMemberIdByUsername(username);
@@ -27,17 +30,20 @@ public class UserDashboard extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Sidebar setup
-        JPanel sidebar = new JPanel(new GridLayout(6, 1, 0, 10));
+        // Sidebar with vertical BoxLayout
+        JPanel sidebar = new JPanel();
+        sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
         sidebar.setBackground(new Color(45, 45, 45));
-        sidebar.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
+        sidebar.setBorder(BorderFactory.createEmptyBorder(20, 15, 20, 15));
 
         JLabel titleLabel = new JLabel("User Panel", JLabel.CENTER);
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         sidebar.add(titleLabel);
+        sidebar.add(Box.createVerticalStrut(25));
 
-        // Sidebar buttons
+        // Create buttons
         JButton borrowedBooksBtn = createSidebarButton("View Borrowed Books");
         JButton checkFinesBtn = createSidebarButton("Check Fines");
         JButton holdBookBtn = createSidebarButton("Hold Book");
@@ -45,22 +51,31 @@ public class UserDashboard extends JFrame {
         JButton paymentHistoryBtn = createSidebarButton("Payment History");
         JButton logoutBtn = createSidebarButton("Logout");
 
-        sidebar.add(borrowedBooksBtn);
-        sidebar.add(checkFinesBtn);
-        sidebar.add(holdBookBtn);
-        sidebar.add(payFinesBtn);
-        sidebar.add(paymentHistoryBtn);
-        sidebar.add(logoutBtn);
+        // Add buttons with spacing
+        for (JButton btn : new JButton[]{borrowedBooksBtn, checkFinesBtn, holdBookBtn, payFinesBtn, paymentHistoryBtn, logoutBtn}) {
+            btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+            sidebar.add(btn);
+            sidebar.add(Box.createVerticalStrut(12));
+        }
 
         add(sidebar, BorderLayout.WEST);
 
-        // Main content panel with CardLayout
-        mainContentPanel = new JPanel();
+        // Main content panel with background image
+        mainContentPanel = new JPanel() {
+            private final Image backgroundImage = new ImageIcon(getClass().getResource("/icons/user.png")).getImage();
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                // Draw scaled background image
+                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
+
         cardLayout = new CardLayout();
         mainContentPanel.setLayout(cardLayout);
-        mainContentPanel.setBackground(new Color(34, 34, 34));
 
-        // Adding content panels
+        // Add content panels
         mainContentPanel.add(createPlaceholderPanel("Welcome, " + username + "!"), "default");
         mainContentPanel.add(createBorrowedBooksPanel(), "borrowedBooks");
         mainContentPanel.add(createFinesPanel(), "fines");
@@ -70,27 +85,32 @@ public class UserDashboard extends JFrame {
 
         add(mainContentPanel, BorderLayout.CENTER);
 
-        // Button actions to switch cards or logout
+        // Button action listeners
         borrowedBooksBtn.addActionListener(e -> {
             updateBorrowedBooksPanel();
             cardLayout.show(mainContentPanel, "borrowedBooks");
         });
+
         checkFinesBtn.addActionListener(e -> {
             updateFinesPanel();
             cardLayout.show(mainContentPanel, "fines");
         });
+
         holdBookBtn.addActionListener(e -> {
             updateHoldBookPanel();
             cardLayout.show(mainContentPanel, "holdBook");
         });
+
         payFinesBtn.addActionListener(e -> {
             updatePayFinesPanel();
             cardLayout.show(mainContentPanel, "payFines");
         });
+
         paymentHistoryBtn.addActionListener(e -> {
             updatePaymentHistoryPanel();
             cardLayout.show(mainContentPanel, "paymentHistory");
         });
+
         logoutBtn.addActionListener(e -> {
             dispose();
             new LoginGUI();
@@ -100,9 +120,12 @@ public class UserDashboard extends JFrame {
         setVisible(true);
     }
 
-    // Helper method for sidebar button style
+    // Create uniform sidebar buttons
     private JButton createSidebarButton(String text) {
         JButton button = new JButton(text);
+        button.setPreferredSize(BUTTON_SIZE);
+        button.setMaximumSize(BUTTON_SIZE);
+        button.setMinimumSize(BUTTON_SIZE);
         button.setFocusPainted(false);
         button.setBackground(new Color(64, 64, 64));
         button.setForeground(Color.WHITE);
@@ -114,6 +137,7 @@ public class UserDashboard extends JFrame {
             public void mouseEntered(MouseEvent e) {
                 button.setBackground(new Color(85, 85, 85));
             }
+
             public void mouseExited(MouseEvent e) {
                 button.setBackground(new Color(64, 64, 64));
             }
@@ -124,28 +148,31 @@ public class UserDashboard extends JFrame {
 
     private JPanel createPlaceholderPanel(String message) {
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBackground(new Color(34, 34, 34));
+        panel.setOpaque(false); // transparent so background image shows
         JLabel label = new JLabel(message);
-        label.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        label.setFont(new Font("Segoe UI", Font.BOLD, 24));
         label.setForeground(Color.WHITE);
         panel.add(label);
         return panel;
     }
 
-    // Borrowed Books Panel and refresh method
+    // Borrowed Books Panel and update method
     private JTextArea borrowedBooksArea;
     private JPanel createBorrowedBooksPanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(new Color(34, 34, 34));
+        panel.setOpaque(false);
+
         borrowedBooksArea = new JTextArea();
         borrowedBooksArea.setEditable(false);
         borrowedBooksArea.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        borrowedBooksArea.setBackground(new Color(50, 50, 50));
+        borrowedBooksArea.setBackground(new Color(0, 0, 0, 120)); // translucent dark bg
         borrowedBooksArea.setForeground(Color.WHITE);
         borrowedBooksArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
         panel.add(new JScrollPane(borrowedBooksArea), BorderLayout.CENTER);
         return panel;
     }
+
     private void updateBorrowedBooksPanel() {
         ArrayList<String> books = DatabaseConnection.getBorrowedBooks(memberId);
         if (books.isEmpty()) {
@@ -154,12 +181,12 @@ public class UserDashboard extends JFrame {
             borrowedBooksArea.setText(String.join("\n", books));
         }
     }
-    
- // Hold Book Panel
+
+    // Hold Book Panel
     private JComboBox<String> bookDropdown;
     private JPanel createHoldBookPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBackground(new Color(34, 34, 34));
+        panel.setOpaque(false);
 
         JLabel selectLabel = new JLabel("Select a book to hold:");
         selectLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
@@ -201,18 +228,18 @@ public class UserDashboard extends JFrame {
         }
     }
 
-
-    // Fines Panel and refresh method
+    // Fines Panel and update method
     private JLabel finesLabel;
     private JPanel createFinesPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBackground(new Color(34, 34, 34));
+        panel.setOpaque(false);
         finesLabel = new JLabel();
         finesLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
         finesLabel.setForeground(Color.WHITE);
         panel.add(finesLabel);
         return panel;
     }
+
     private void updateFinesPanel() {
         double fines = DatabaseConnection.getFines(memberId);
         finesLabel.setText("Total outstanding fines: ₹" + String.format("%.2f", fines));
@@ -221,7 +248,7 @@ public class UserDashboard extends JFrame {
     // Pay Fines Panel
     private JPanel createPayFinesPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBackground(new Color(34, 34, 34));
+        panel.setOpaque(false);
 
         JLabel prompt = new JLabel("Enter amount to pay:");
         prompt.setFont(new Font("Segoe UI", Font.BOLD, 16));
@@ -269,24 +296,28 @@ public class UserDashboard extends JFrame {
 
         return panel;
     }
+
     private void updatePayFinesPanel() {
-        // No dynamic content to update currently
+        // no dynamic update needed here
     }
 
-    // Payment History Panel and refresh method
+    // Payment History Panel and update method
     private JTextArea paymentHistoryArea;
     private JPanel createPaymentHistoryPanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(new Color(34, 34, 34));
+        panel.setOpaque(false);
+
         paymentHistoryArea = new JTextArea();
         paymentHistoryArea.setEditable(false);
         paymentHistoryArea.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        paymentHistoryArea.setBackground(new Color(50, 50, 50));
+        paymentHistoryArea.setBackground(new Color(0, 0, 0, 120));
         paymentHistoryArea.setForeground(Color.WHITE);
         paymentHistoryArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
         panel.add(new JScrollPane(paymentHistoryArea), BorderLayout.CENTER);
         return panel;
     }
+
     private void updatePaymentHistoryPanel() {
         ArrayList<String> history = DatabaseConnection.getPaymentHistory(memberId);
         if (history.isEmpty()) {

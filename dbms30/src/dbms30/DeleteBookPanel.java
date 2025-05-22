@@ -8,25 +8,42 @@ public class DeleteBookPanel extends JPanel {
     private JButton deleteButton;
 
     public DeleteBookPanel() {
-        setLayout(new BorderLayout());
         setBackground(new Color(34, 34, 34));
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(12, 10, 12, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JPanel formPanel = new JPanel(new GridLayout(2, 2, 10, 10));
-        formPanel.setBackground(new Color(34, 34, 34));
-        formPanel.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
+        JLabel titleLabel = new JLabel("             Delete Book");
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        add(titleLabel, gbc);
+
+        gbc.gridwidth = 1;
+        gbc.anchor = GridBagConstraints.CENTER;
 
         JLabel idLabel = new JLabel("Enter Book ID:");
         idLabel.setForeground(Color.WHITE);
-        formPanel.add(idLabel);
+        idLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        add(idLabel, gbc);
 
-        idField = new JTextField();
-        formPanel.add(idField);
+        idField = new JTextField(15);
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        add(idField, gbc);
 
         deleteButton = new JButton("Delete");
-        formPanel.add(new JLabel()); // empty placeholder
-        formPanel.add(deleteButton);
-
-        add(formPanel, BorderLayout.CENTER);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        add(deleteButton, gbc);
 
         deleteButton.addActionListener(e -> {
             String idText = idField.getText().trim();

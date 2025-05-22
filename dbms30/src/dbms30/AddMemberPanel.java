@@ -14,12 +14,25 @@ public class AddMemberPanel extends JPanel {
         setLayout(new GridBagLayout());
         setBackground(new Color(34, 34, 34));
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 10, 8, 10);
+        gbc.insets = new Insets(10, 10, 10, 10);
         gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Row 1: Name
+        // Row 0: Title Bar
+        JLabel titleLabel = new JLabel("Add New Member");
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
         gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        add(titleLabel, gbc);
+
+        // Row 1: Name
+        gbc.gridy = 1;
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
         JLabel nameLabel = new JLabel("Name:");
         nameLabel.setForeground(Color.WHITE);
         add(nameLabel, gbc);
@@ -30,7 +43,7 @@ public class AddMemberPanel extends JPanel {
 
         // Row 2: Username
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         JLabel usernameLabel = new JLabel("Username:");
         usernameLabel.setForeground(Color.WHITE);
         add(usernameLabel, gbc);
@@ -38,10 +51,10 @@ public class AddMemberPanel extends JPanel {
         gbc.gridx = 1;
         usernameField = new JTextField(20);
         add(usernameField, gbc);
-        
-     // Row 3: Email
+
+        // Row 3: Email
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         JLabel emailLabel = new JLabel("Email:");
         emailLabel.setForeground(Color.WHITE);
         add(emailLabel, gbc);
@@ -50,10 +63,9 @@ public class AddMemberPanel extends JPanel {
         emailField = new JTextField(20);
         add(emailField, gbc);
 
-
         // Row 4: Membership Type
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         JLabel membershipLabel = new JLabel("Membership Type:");
         membershipLabel.setForeground(Color.WHITE);
         add(membershipLabel, gbc);
@@ -64,7 +76,7 @@ public class AddMemberPanel extends JPanel {
 
         // Row 5: Buttons
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
 
@@ -93,6 +105,8 @@ public class AddMemberPanel extends JPanel {
                 JOptionPane.showMessageDialog(this, "Member added successfully!");
                 nameField.setText("");
                 usernameField.setText("");
+                emailField.setText("");
+                membershipTypeBox.setSelectedIndex(0);
             } else {
                 JOptionPane.showMessageDialog(this, "Failed to add member.", "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -102,6 +116,7 @@ public class AddMemberPanel extends JPanel {
             // Clear fields instead of disposing, since it's a panel now
             nameField.setText("");
             usernameField.setText("");
+            emailField.setText("");
             membershipTypeBox.setSelectedIndex(0);
         });
     }

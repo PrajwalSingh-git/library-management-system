@@ -11,6 +11,17 @@ public class AddBookPanel extends JPanel {
         setLayout(new BorderLayout());
         setBackground(new Color(34, 34, 34));
 
+        // Title Bar
+        JLabel titleBar = new JLabel("Add New Book");
+        titleBar.setOpaque(true);
+        titleBar.setBackground(new Color(45, 45, 45));
+        titleBar.setForeground(Color.WHITE);
+        titleBar.setFont(new Font("SansSerif", Font.BOLD, 20));
+        titleBar.setHorizontalAlignment(SwingConstants.CENTER);
+        titleBar.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        add(titleBar, BorderLayout.NORTH);
+
+        // Form Panel
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBackground(new Color(34, 34, 34));
         formPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 10, 30));
@@ -71,14 +82,12 @@ public class AddBookPanel extends JPanel {
         add(formPanel, BorderLayout.CENTER);
 
         // Buttons Panel
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         buttonPanel.setBackground(new Color(34, 34, 34));
-
         addButton = new JButton("Add Book");
         clearButton = new JButton("Clear");
         buttonPanel.add(addButton);
         buttonPanel.add(clearButton);
-
         add(buttonPanel, BorderLayout.SOUTH);
 
         // Button Actions
