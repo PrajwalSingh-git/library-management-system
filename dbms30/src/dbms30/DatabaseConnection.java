@@ -128,8 +128,15 @@ public class DatabaseConnection {
     }
     
     public static boolean placeHoldRequest(int memberId, int bookId) {
-        String sql = "INSERT INTO hold_requests (member_id, book_id, request_date, status) VALUES (?, ?, CURDATE(), 'Pending')";
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        // First check if book is available
+        if (!getAvailableBooksForHold().contains(bookId + " - ")) {
+            return false;
+        }
+        
+        String sql = "INSERT INTO hold_requests (member_id, book_id, request_date, status) " +
+                     "VALUES (?, ?, CURDATE(), 'Pending')";
+        try (Connection conn = getConnection(); 
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, memberId);
             ps.setInt(2, bookId);
             return ps.executeUpdate() > 0;
@@ -138,11 +145,43 @@ public class DatabaseConnection {
         }
         return false;
     }
+    
+    public static boolean isBookAvailableForHoldByIsbn(String isbn) {
+        String sql = "SELECT b.id FROM books b " +
+                     "LEFT JOIN lendings l ON b.id = l.book_id AND l.return_date IS NULL " +
+                     "WHERE b.isbn = ? " +
+                     "GROUP BY b.id " +
+                     "HAVING COUNT(l.id) = 0";
+        
+        try (Connection conn = getConnection(); 
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, isbn);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public static boolean placeHoldRequest(int memberId, String isbn) {
+        Book book = searchBookByIsbn(isbn);
+        if (book == null) {
+            return false;
+        }
+        return placeHoldRequest(memberId, book.getId());
+    }
 
     public static ArrayList<String> getAvailableBooksForHold() {
         ArrayList<String> books = new ArrayList<>();
-        String sql = "SELECT id, title FROM books WHERE available_copies > 0";
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+        String sql = "SELECT b.id, b.title FROM books b " +
+                     "LEFT JOIN lendings l ON b.id = l.book_id AND l.return_date IS NULL " +
+                     "GROUP BY b.id, b.title " +
+                     "HAVING COUNT(l.id) = 0"; // Books not currently lent out
+        
+        try (Connection conn = getConnection(); 
+             PreparedStatement ps = conn.prepareStatement(sql); 
+             ResultSet rs = ps.executeQuery()) {
+            
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String title = rs.getString("title");
@@ -153,7 +192,6 @@ public class DatabaseConnection {
         }
         return books;
     }
-
 
 
     public static boolean addBook(String title, String author, String isbn, String genre) {
@@ -264,13 +302,7 @@ public class DatabaseConnection {
 
     public static boolean issueBook(int bookId, int memberId) {
         try (Connection conn = getConnection()) {
-            String sql = "INSERT INTO lendings (book_id, member_id, issue_date, due_date) " +
-                         "VALUES (?, ?, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY))";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, bookId);
-            ps.setInt(2, memberId);
-
-            // Check if the book is already issued
+            // Check if book is already issued
             String checkSql = "SELECT * FROM lendings WHERE book_id = ? AND return_date IS NULL";
             PreparedStatement checkPs = conn.prepareStatement(checkSql);
             checkPs.setInt(1, bookId);
@@ -280,12 +312,42 @@ public class DatabaseConnection {
                 return false;  // Book is already issued
             }
 
+            // Check for pending hold requests
+            String holdCheckSql = "SELECT * FROM hold_requests WHERE book_id = ? AND status = 'Approved'";
+            PreparedStatement holdCheckPs = conn.prepareStatement(holdCheckSql);
+            holdCheckPs.setInt(1, bookId);
+            ResultSet holdRs = holdCheckPs.executeQuery();
+
+            if (holdRs.next()) {
+                return false;  // Book is on hold for someone
+            }
+
+            // Issue the book
+            String sql = "INSERT INTO lendings (book_id, member_id, issue_date, due_date) " +
+                         "VALUES (?, ?, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY))";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, bookId);
+            ps.setInt(2, memberId);
+
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
-    }    
+    }
+    
+    public static boolean hasPendingHoldRequests(int bookId) {
+        String sql = "SELECT COUNT(*) FROM hold_requests WHERE book_id = ? AND status = 'Pending'";
+        try (Connection conn = getConnection(); 
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookId);
+            ResultSet rs = ps.executeQuery();
+            return rs.next() && rs.getInt(1) > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     // View fines for a member
     public static double getFines(int memberId) {

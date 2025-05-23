@@ -188,6 +188,13 @@ public class UserDashboard extends JFrame {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setOpaque(false);
 
+        // Create tabbed pane for different hold methods
+        JTabbedPane tabbedPane = new JTabbedPane();
+        
+        // Panel for holding by book selection
+        JPanel selectPanel = new JPanel(new GridBagLayout());
+        selectPanel.setOpaque(false);
+        
         JLabel selectLabel = new JLabel("Select a book to hold:");
         selectLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
         selectLabel.setForeground(Color.WHITE);
@@ -198,11 +205,11 @@ public class UserDashboard extends JFrame {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.gridx = 0; gbc.gridy = 0;
-        panel.add(selectLabel, gbc);
+        selectPanel.add(selectLabel, gbc);
         gbc.gridx = 1;
-        panel.add(bookDropdown, gbc);
+        selectPanel.add(bookDropdown, gbc);
         gbc.gridx = 0; gbc.gridy = 1; gbc.gridwidth = 2;
-        panel.add(holdBtn, gbc);
+        selectPanel.add(holdBtn, gbc);
 
         holdBtn.addActionListener(e -> {
             String selected = (String) bookDropdown.getSelectedItem();
@@ -216,6 +223,54 @@ public class UserDashboard extends JFrame {
                 }
             }
         });
+
+        // Panel for holding by ISBN
+        JPanel isbnPanel = new JPanel(new GridBagLayout());
+        isbnPanel.setOpaque(false);
+        
+        JLabel isbnLabel = new JLabel("Enter ISBN to hold:");
+        isbnLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        isbnLabel.setForeground(Color.WHITE);
+
+        JTextField isbnField = new JTextField(15);
+        JButton isbnHoldBtn = new JButton("Place Hold by ISBN");
+
+        gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.gridx = 0; gbc.gridy = 0;
+        isbnPanel.add(isbnLabel, gbc);
+        gbc.gridx = 1;
+        isbnPanel.add(isbnField, gbc);
+        gbc.gridx = 0; gbc.gridy = 1; gbc.gridwidth = 2;
+        isbnPanel.add(isbnHoldBtn, gbc);
+
+        isbnHoldBtn.addActionListener(e -> {
+            String isbn = isbnField.getText().trim();
+            if (!isbn.isEmpty()) {
+                Book book = DatabaseConnection.searchBookByIsbn(isbn);
+                if (book != null) {
+                    boolean success = DatabaseConnection.placeHoldRequest(memberId, book.getId());
+                    if (success) {
+                        JOptionPane.showMessageDialog(this, "Hold request placed successfully for: " + book.getTitle(), "Success", JOptionPane.INFORMATION_MESSAGE);
+                        isbnField.setText("");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Failed to place hold request. Try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "No book found with ISBN: " + isbn, "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        // Add both panels to the tabbed pane
+        tabbedPane.addTab("Select Book", selectPanel);
+        tabbedPane.addTab("Enter ISBN", isbnPanel);
+        
+        // Add tabbed pane to main panel
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0; gbc.gridy = 0;
+        gbc.insets = new Insets(10, 10, 10, 10);
+        panel.add(tabbedPane, gbc);
 
         return panel;
     }
