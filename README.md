@@ -14,12 +14,13 @@ This is a **desktop-based Library Management System** built using **Java Swing**
   - View system reports and manage settings
 
 - 📚 **Librarian Functionalities**
-  - Issue and return books
-  - Track due dates and manage overdue fines
+  - Issue, return, and books
+  - Track due dates, manage overdue fines, and view hold request
 
 - 👤 **User Functionalities**
   - View borrowed books
   - Check and pay fines
+  - hold book(like reservation)
   - View payment history
 
 - 💾 **Embedded MySQL Integration**
