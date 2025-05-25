@@ -75,4 +75,4 @@ This is a **desktop-based Library Management System** built using **Java Swing**
 Contributions are welcome! Feel free to open issues or submit pull requests for improvements or bug fixes.
 
 📃 License
-This project is open-source and available under the
+This project is open-source.
