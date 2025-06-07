@@ -1,4 +1,9 @@
 # Library Management System with Embedded MySQL Integration
+<br> group member-
+Prajwal singh 
+Somya Awasthi
+Katyani Shah
+Tanishq yadav <br>
 
 ## 📚 Project Overview
 
