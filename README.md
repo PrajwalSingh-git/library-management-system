@@ -3,12 +3,7 @@
 
 # 📚 Library Management System with Embedded MySQL Integration
 
-### 👥 Group Members
 
-* Prajwal Singh
-* Somya Awasthi
-* Katyani Shah
-* Tanishq Yadav
 
 ---
 
