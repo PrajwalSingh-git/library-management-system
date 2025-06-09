@@ -40,8 +40,8 @@ public class AddMemberPanel extends JPanel {
         add(nameField, gbc);
 
         // Username
-        gbc.gridy = 2;
         gbc.gridx = 0;
+        gbc.gridy = 2;
         JLabel usernameLabel = new JLabel("Username:");
         usernameLabel.setForeground(Color.WHITE);
         add(usernameLabel, gbc);
@@ -51,8 +51,8 @@ public class AddMemberPanel extends JPanel {
         add(usernameField, gbc);
 
         // Email
-        gbc.gridy = 3;
         gbc.gridx = 0;
+        gbc.gridy = 3;
         JLabel emailLabel = new JLabel("Email:");
         emailLabel.setForeground(Color.WHITE);
         add(emailLabel, gbc);
@@ -62,8 +62,8 @@ public class AddMemberPanel extends JPanel {
         add(emailField, gbc);
 
         // Membership Type
-        gbc.gridy = 4;
         gbc.gridx = 0;
+        gbc.gridy = 4;
         JLabel membershipLabel = new JLabel("Membership Type:");
         membershipLabel.setForeground(Color.WHITE);
         add(membershipLabel, gbc);
@@ -73,8 +73,8 @@ public class AddMemberPanel extends JPanel {
         add(membershipTypeBox, gbc);
 
         // Buttons
-        gbc.gridy = 5;
         gbc.gridx = 0;
+        gbc.gridy = 5;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
 
