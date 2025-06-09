@@ -4,7 +4,7 @@
 
 # 📚 Library Management System
 
-### 🚀 Java Swing + MySQL Integrated Desktop Application
+### 🚀 Java Swing + MySQL Integrated Desktop Application..
 
 ---
 
