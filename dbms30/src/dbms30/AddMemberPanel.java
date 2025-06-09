@@ -15,21 +15,19 @@ public class AddMemberPanel extends JPanel {
         setBackground(new Color(34, 34, 34));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Row 0: Title Bar
+        // Title
         JLabel titleLabel = new JLabel("Add New Member");
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
         add(titleLabel, gbc);
 
-        // Row 1: Name
+        // Name
         gbc.gridy = 1;
         gbc.gridwidth = 1;
         gbc.gridx = 0;
@@ -41,9 +39,9 @@ public class AddMemberPanel extends JPanel {
         nameField = new JTextField(20);
         add(nameField, gbc);
 
-        // Row 2: Username
-        gbc.gridx = 0;
+        // Username
         gbc.gridy = 2;
+        gbc.gridx = 0;
         JLabel usernameLabel = new JLabel("Username:");
         usernameLabel.setForeground(Color.WHITE);
         add(usernameLabel, gbc);
@@ -52,9 +50,9 @@ public class AddMemberPanel extends JPanel {
         usernameField = new JTextField(20);
         add(usernameField, gbc);
 
-        // Row 3: Email
-        gbc.gridx = 0;
+        // Email
         gbc.gridy = 3;
+        gbc.gridx = 0;
         JLabel emailLabel = new JLabel("Email:");
         emailLabel.setForeground(Color.WHITE);
         add(emailLabel, gbc);
@@ -63,9 +61,9 @@ public class AddMemberPanel extends JPanel {
         emailField = new JTextField(20);
         add(emailField, gbc);
 
-        // Row 4: Membership Type
-        gbc.gridx = 0;
+        // Membership Type
         gbc.gridy = 4;
+        gbc.gridx = 0;
         JLabel membershipLabel = new JLabel("Membership Type:");
         membershipLabel.setForeground(Color.WHITE);
         add(membershipLabel, gbc);
@@ -74,21 +72,22 @@ public class AddMemberPanel extends JPanel {
         membershipTypeBox = new JComboBox<>(new String[]{"Gold", "Silver", "Platinum"});
         add(membershipTypeBox, gbc);
 
-        // Row 5: Buttons
-        gbc.gridx = 0;
+        // Buttons
         gbc.gridy = 5;
+        gbc.gridx = 0;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
 
         addButton = new JButton("Add Member");
         cancelButton = new JButton("Cancel");
+
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
         buttonPanel.setBackground(new Color(34, 34, 34));
         buttonPanel.add(addButton);
         buttonPanel.add(cancelButton);
         add(buttonPanel, gbc);
 
-        // Button Actions
+        // Add Button Action
         addButton.addActionListener(e -> {
             String name = nameField.getText().trim();
             String username = usernameField.getText().trim();
@@ -112,8 +111,8 @@ public class AddMemberPanel extends JPanel {
             }
         });
 
+        // Cancel Button Action
         cancelButton.addActionListener(e -> {
-            // Clear fields instead of disposing, since it's a panel now
             nameField.setText("");
             usernameField.setText("");
             emailField.setText("");
