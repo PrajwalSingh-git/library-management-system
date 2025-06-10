@@ -12,7 +12,7 @@
 
 The **Library Management System** is a powerful desktop application built using **Java Swing** for the user interface and **MySQL** for database operations. Designed for educational institutions and public libraries, it streamlines the process of managing books, users, and transactions with a focus on usability and role-based access.
 
-This system supports multiple user types—**Admin**, **Librarian**, and **User**—each with tailored functionality and access rights.
+This system supports multiple user types—**Admin**, **Librarian**, and **User**—each with tailored functionality and access rights...
 
 ---
 
